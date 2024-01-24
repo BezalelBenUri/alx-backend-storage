@@ -74,46 +74,17 @@ class Cache:
         # Return the generated key
         return key
 
-    def get(self, key: str, fn: Optional[Callable] = None) -> Union[bytes, None]:
+    def get(self, key: str,
+            fn: Optional[Callable] = None) -> Union[str, bytes, int, float]:
         """
-        Retrieve data from Redis using the provided key.
-
-        Args:
-            key (str): The key used to retrieve the data.
-            fn (Optional[Callable]): Optional callable to convert the data back to the desired format.
-
-        Returns:
-            Union[bytes, None]: The retrieved data in bytes or None if the key does not exist.
+        Convert data back to desired format
         """
-        # Retrieve the data from Redis
-        data = self._redis.get(key)
+        value = self._redis.get(key)
+        return value if not fn else fn(value)
 
-        # Apply the conversion function if provided
-        if fn is not None and data is not None:
-            data = fn(data)
+    def get_int(self, key):
+        return self.get(key, int)
 
-        return data
-
-    def get_str(self, key: str) -> Union[str, None]:
-        """
-        Retrieve string data from Redis using the provided key.
-
-        Args:
-            key (str): The key used to retrieve the data.
-
-        Returns:
-            Union[str, None]: The retrieved string data or None if the key does not exist.
-        """
-        return self._redis.get(key, fn=lambda d: d.decode("utf-8"))
-
-    def get_int(self, key: str) -> Union[int, None]:
-        """
-        Retrieve integer data from Redis using the provided key.
-
-        Args:
-            key (str): The key used to retrieve the data.
-
-        Returns:
-            Union[int, None]: The retrieved integer data or None if the key does not exist.
-        """
-        return self.get(key, fn=int)
+    def get_str(self, key):
+        value = self._redis.get(key)
+        return value.decode("utf-8")
