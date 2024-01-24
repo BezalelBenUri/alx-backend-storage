@@ -104,7 +104,7 @@ class Cache:
         Returns:
             Union[str, None]: The retrieved string data or None if the key does not exist.
         """
-        return self.get(key, fn=lambda d: d.decode("utf-8"))
+        return self._redis.get(key, fn=lambda d: d.decode("utf-8"))
 
     def get_int(self, key: str) -> Union[int, None]:
         """
