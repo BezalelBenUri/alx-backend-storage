@@ -23,6 +23,7 @@ def count_requests(method: Callable) -> Callable:
         if cached_html:
             return cached_html.decode('utf-8')
         html = method(url)
+        redis_.set(f'count:{url}', 0)
         redis_.setex(f"cached:{url}", 10, html)
         return html
 
